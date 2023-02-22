@@ -63,11 +63,6 @@ const makeTodos = () => {
 
 makeTodos();
 
-function editing(e) {
-  e.classList.toggle('fa-ellipsis-vertical');
-  e.classList.toggle('fa-trash-can');
-}
-
 const activeCountSpan = document.getElementById('active-count');
 
 function updateCount(countChange) {
@@ -78,6 +73,28 @@ function updateCount(countChange) {
   } else {
     activeCountSpan.hidden = false;
     activeCountSpan.innerHTML = activeCount;
+  }
+}
+
+function editing(e) {
+  e.classList.toggle('fa-ellipsis-vertical');
+  e.classList.toggle('fa-trash-can');
+
+  if (e.classList.contains('fa-trash-can')) {
+    e.addEventListener('click', () => {
+      const parent = e.parentElement;
+      const index = parseInt(parent.getAttribute('data-index'), 10);
+
+      todos = todos.filter((todo) => {
+        if (todo.index !== index) return todo;
+
+        if (todo.completed);
+        else updateCount(-1);
+
+        return null;
+      });
+      parent.remove();
+    });
   }
 }
 

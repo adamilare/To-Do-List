@@ -83,6 +83,10 @@ textarea {
   flex: 1;
 }
 
+.todo-menu {
+  padding-left: 20px;
+}
+
 #active-count {
   position: relative;
   top: -5px;
