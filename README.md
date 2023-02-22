@@ -76,7 +76,7 @@ The project implementation introduces developers to basic Webpack development.
 
 ## 🚀 Live Demo <a name="live-demo"></a>
 
-- [Live Demo](https://adamilare.github.io/to-do-list/dist)
+- [Live Demo](https://adamilare.github.io/To-Do-List/dist)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
