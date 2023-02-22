@@ -1,5 +1,5 @@
 {
-  "name": "webpack-bplate",
+  "name": "To-Do-List",
   "version": "1.0.0",
   "description": "",
   "private": "true",
@@ -10,15 +10,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/adamilare/webpack-bplate.git"
+    "url": "git+https://github.com/adamilare/To-Do-List.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/adamilare/webpack-bplate/issues"
+    "url": "https://github.com/adamilare/To-Do-List/issues"
   },
-  "homepage": "https://github.com/adamilare/webpack-bplate#readme",
+  "homepage": "https://github.com/adamilare/To-Do-List#readme",
   "devDependencies": {
     "css-loader": "^6.7.3",
     "html-webpack-plugin": "^5.5.0",
