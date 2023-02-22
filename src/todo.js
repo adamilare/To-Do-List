@@ -1,7 +1,7 @@
-let todos = JSON.parse(localStorage.getItem('todos')) || [];
+let todos = JSON.parse(localStorage.getItem("todos")) || [];
 
 function updateLocalStorage() {
-  localStorage.setItem('todos', JSON.stringify(todos));
+  localStorage.setItem("todos", JSON.stringify(todos));
 }
 
 function addTodo(decription) {
@@ -11,13 +11,13 @@ function addTodo(decription) {
   return newTodo;
 }
 
-function removeTodo(index) {
-  index -= 1;
+function removeTodo(id) {
+  id -= 1;
   todos = todos
-    .filter((todo, ind) => index !== ind)
-    .map((todo, index) => ({
+    .filter((todo, ind) => id !== ind)
+    .map((todo, ind) => ({
       ...todo,
-      index: index + 1,
+      index: ind + 1,
     }));
 
   updateLocalStorage();
@@ -60,7 +60,7 @@ function getActiveTodosCount() {
     return acc;
   }, 0);
 
-  return count > 0 ? count : '';
+  return count > 0 ? count : "";
 }
 
 export {
