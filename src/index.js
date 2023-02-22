@@ -1,80 +1,16 @@
 import './style.css';
+import {
+  addTodo,
+  getTodos,
+  updateTodo,
+  getActiveTodosCount,
+  removeTodo,
+  clearTodos,
+  clearCompletedTodos,
+  updateTodoStatus,
+} from './todo.js';
 
-let todos = [
-  { decription: 'Double-tap to edit', completed: false, index: 0 },
-  {
-    decription: "Drag 'n drop to reorder your list",
-    completed: false,
-    index: 1,
-  },
-  {
-    decription: 'Manage all your lists in one place',
-    completed: false,
-    index: 2,
-  },
-  { decription: 'Resync to clear out the old', completed: false, index: 3 },
-];
-
-let activeCount = todos.reduce((acc, todo) => {
-  if (!todo.completed) {
-    acc += 1;
-  }
-  return acc;
-}, 0);
-
-let lastIndex = 3;
 let todoListDiv;
-
-const createTodo = (todo) => {
-  const newTodo = document.createElement('li');
-  newTodo.classList.add('todo');
-  newTodo.setAttribute('data-index', todo.index);
-  newTodo.innerHTML = `<input type="checkbox"><textarea class="todo-description" rows="1">${todo.decription}</textarea><i class="todo-menu fa fa-ellipsis-vertical"></i>`;
-  return newTodo;
-};
-
-// initial render
-const makeTodos = () => {
-  const todoWrapper = document.getElementById('todo-main');
-  const todoHeader = document.querySelector('.todo-header');
-  const todoInput = document.createElement('div');
-  todoListDiv = document.createElement('ul');
-  const todoClear = document.createElement('div');
-
-  const spanCount = document.createElement('span');
-  spanCount.id = 'active-count';
-  spanCount.innerHTML = activeCount;
-  todoHeader.appendChild(spanCount);
-
-  todoInput.classList.add('todo-input');
-  todoInput.innerHTML = '<input id="add-todo" type="text" placeholder="Add to your list..."><i class="fa fa-arrow-turn-down"></i>';
-  todoWrapper.appendChild(todoInput);
-
-  todoListDiv.classList.add('todos');
-  todos.forEach((todo) => {
-    todoListDiv.appendChild(createTodo(todo));
-  });
-  todoWrapper.appendChild(todoListDiv);
-
-  todoClear.classList.add('todo-clear');
-  todoClear.innerHTML = '<span>Clear completed</span>';
-  todoWrapper.appendChild(todoClear);
-};
-
-makeTodos();
-
-const activeCountSpan = document.getElementById('active-count');
-
-function updateCount(countChange) {
-  activeCount += countChange;
-
-  if (activeCount <= 0) {
-    activeCountSpan.hidden = true;
-  } else {
-    activeCountSpan.hidden = false;
-    activeCountSpan.innerHTML = activeCount;
-  }
-}
 
 function editing(e) {
   e.classList.toggle('fa-ellipsis-vertical');
@@ -85,93 +21,108 @@ function editing(e) {
       const parent = e.parentElement;
       const index = parseInt(parent.getAttribute('data-index'), 10);
 
-      todos = todos.filter((todo) => {
-        if (todo.index !== index) return todo;
-
-        if (todo.completed);
-        else updateCount(-1);
-
-        return null;
-      });
-      parent.remove();
+      removeTodo(index);
+      createTodos(); // eslint-disable-line no-use-before-define
     });
   }
 }
 
-function updateTodo(index, countChange = 0) {
-  todos = todos.map((todo) => {
-    if (todo.index === index) {
-      todo.completed = !todo.completed;
-    }
-    return todo;
+function addListners(item) {
+  const textarea = item.querySelector('textarea');
+  const checkbox = item.querySelector("input[type='checkbox']");
+
+  textarea.addEventListener('focus', (e) => {
+    editing(e.target.parentElement.querySelector('i'));
   });
 
-  updateCount(countChange);
+  textarea.addEventListener('blur', (e) => {
+    editing(e.target.parentElement.querySelector('i'));
+  });
+
+  textarea.addEventListener('input', () => {
+    textarea.rows = Math.ceil(textarea.scrollHeight / 20);
+    updateTodo(
+      textarea.parentElement.getAttribute('data-index'),
+      textarea.value,
+    );
+  });
+
+  checkbox.addEventListener('change', (e) => {
+    if (e.target.checked) item.classList.add('completed');
+    else item.classList.remove('completed');
+
+    updateTodoStatus(item.getAttribute('data-index'));
+  });
 }
 
-const refreshListeners = () => {
-  document.querySelectorAll('textarea').forEach((item) => {
-    item.addEventListener('focus', (e) => {
-      editing(e.target.parentElement.querySelector('i'));
-    });
-
-    item.addEventListener('blur', (e) => {
-      editing(e.target.parentElement.querySelector('i'));
-    });
-
-    item.addEventListener('input', (e) => {
-      const textarea = e.target;
-      textarea.rows = Math.ceil(textarea.scrollHeight / 20);
-    });
-  });
-
-  document.querySelectorAll('input[type="checkbox"]').forEach((item) => {
-    item.addEventListener('change', (e) => {
-      const parent = e.target.parentElement;
-      let countChange = 0;
-      if (e.target.checked) {
-        parent.classList.add('completed');
-        countChange = -1;
-      } else {
-        parent.classList.remove('completed');
-        countChange = 1;
-      }
-      updateTodo(parent.getAttribute('data-index'), countChange);
-    });
-  });
+const createTodo = (todo) => {
+  const newTodo = document.createElement('li');
+  newTodo.classList.add('todo');
+  newTodo.setAttribute('data-index', todo.index);
+  newTodo.innerHTML = `<input type="checkbox"><textarea class="todo-description" rows="1">${todo.decription}</textarea><i class="todo-menu fa fa-ellipsis-vertical"></i>`;
+  addListners(newTodo); // (newTodo.querySelector("textarea"));
+  return newTodo;
 };
 
-refreshListeners();
+function createTodos() {
+  const todoListDiv = document.querySelector('.todos');
+  todoListDiv.innerHTML = '';
+  getTodos().forEach((todo) => {
+    todoListDiv.appendChild(createTodo(todo));
+  });
+  const countElem = document.getElementById('active-count');
+  countElem.innerHTML = getActiveTodosCount();
+  if (getActiveTodosCount() <= 0) {
+    countElem.hidden = true;
+  }
+}
 
-const addNewTodo = (text) => {
-  const todo = { decription: text, completed: false, index: lastIndex + 1 };
-  todos.push(todo);
-  lastIndex += 1;
-  todoListDiv.appendChild(createTodo(todo));
-  updateCount(1);
-  refreshListeners();
+const makeTodos = () => {
+  const todoWrapper = document.getElementById('todo-main');
+  const todoHeader = document.querySelector('.todo-header');
+  const todoInput = document.createElement('div');
+  todoListDiv = document.createElement('ul');
+  const todoClear = document.createElement('div');
+
+  const spanCount = document.createElement('span');
+  spanCount.id = 'active-count';
+  spanCount.innerHTML = getActiveTodosCount();
+  todoHeader.appendChild(spanCount);
+  if (getActiveTodosCount() <= 0) {
+    todoHeader.querySelector('#active-count').hidden = true;
+  }
+
+  todoInput.classList.add('todo-input');
+  todoInput.innerHTML = '<input id="add-todo" type="text" placeholder="Add to your list..."><i class="fa fa-arrow-turn-down"></i>';
+  todoWrapper.appendChild(todoInput);
+
+  todoListDiv.classList.add('todos');
+  todoWrapper.appendChild(todoListDiv);
+  createTodos();
+
+  todoClear.classList.add('todo-clear');
+  todoClear.innerHTML = '<span>Clear completed</span>';
+  todoWrapper.appendChild(todoClear);
 };
+
+makeTodos();
 
 document.querySelector('.todo-clear').addEventListener('click', () => {
-  todos = todos.filter((todo) => !todo.completed);
-  document.querySelectorAll('.completed').forEach((item) => {
-    item.remove();
-  });
+  clearCompletedTodos();
+  createTodos();
 });
 
 document.getElementById('clear-all').addEventListener('click', () => {
-  todos = [];
-  document.querySelectorAll('.todo').forEach((item) => {
-    item.remove();
-  });
-  updateCount(-activeCount);
+  clearTodos();
+  createTodos();
 });
 
 document.getElementById('add-todo').addEventListener('input', (e) => {
   e.target.addEventListener('keydown', (event) => {
     if (event.keyCode === 13 && event.target.value !== '') {
-      addNewTodo(event.target.value);
+      addTodo(event.target.value);
       event.target.value = '';
+      createTodos();
     }
   });
 });
