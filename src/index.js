@@ -1,18 +1,18 @@
-import "./style.css";
+import './style.css';
 
 let todos = [
-  { decription: "Double-tap to edit", completed: false, index: 0 },
+  { decription: 'Double-tap to edit', completed: false, index: 0 },
   {
     decription: "Drag 'n drop to reorder your list",
     completed: false,
     index: 1,
   },
   {
-    decription: "Manage all your lists in one place",
+    decription: 'Manage all your lists in one place',
     completed: false,
     index: 2,
   },
-  { decription: "Resync to clear out the old", completed: false, index: 3 },
+  { decription: 'Resync to clear out the old', completed: false, index: 3 },
 ];
 
 let activeCount = todos.reduce((acc, todo) => {
@@ -26,50 +26,49 @@ let lastIndex = 3;
 let todoListDiv;
 
 const createTodo = (todo) => {
-  const newTodo = document.createElement("li");
-  newTodo.classList.add("todo");
-  newTodo.setAttribute("data-index", todo.index);
+  const newTodo = document.createElement('li');
+  newTodo.classList.add('todo');
+  newTodo.setAttribute('data-index', todo.index);
   newTodo.innerHTML = `<input type="checkbox"><textarea class="todo-description" rows="1">${todo.decription}</textarea><i class="todo-menu fa fa-ellipsis-vertical"></i>`;
   return newTodo;
 };
 
 // initial render
 const makeTodos = () => {
-  const todoWrapper = document.getElementById("todo-main");
-  const todoHeader = document.querySelector(".todo-header");
-  const todoInput = document.createElement("div");
-  todoListDiv = document.createElement("ul");
-  const todoClear = document.createElement("div");
+  const todoWrapper = document.getElementById('todo-main');
+  const todoHeader = document.querySelector('.todo-header');
+  const todoInput = document.createElement('div');
+  todoListDiv = document.createElement('ul');
+  const todoClear = document.createElement('div');
 
-  const spanCount = document.createElement("span");
-  spanCount.id = "active-count";
+  const spanCount = document.createElement('span');
+  spanCount.id = 'active-count';
   spanCount.innerHTML = activeCount;
   todoHeader.appendChild(spanCount);
 
-  todoInput.classList.add("todo-input");
-  todoInput.innerHTML =
-    '<input id="add-todo" type="text" placeholder="Add to your list..."><i class="fa fa-arrow-turn-down"></i>';
+  todoInput.classList.add('todo-input');
+  todoInput.innerHTML = '<input id="add-todo" type="text" placeholder="Add to your list..."><i class="fa fa-arrow-turn-down"></i>';
   todoWrapper.appendChild(todoInput);
 
-  todoListDiv.classList.add("todos");
+  todoListDiv.classList.add('todos');
   todos.forEach((todo) => {
     todoListDiv.appendChild(createTodo(todo));
   });
   todoWrapper.appendChild(todoListDiv);
 
-  todoClear.classList.add("todo-clear");
-  todoClear.innerHTML = "<span>Clear completed</span>";
+  todoClear.classList.add('todo-clear');
+  todoClear.innerHTML = '<span>Clear completed</span>';
   todoWrapper.appendChild(todoClear);
 };
 
 makeTodos();
 
 function editing(e) {
-  e.classList.toggle("fa-ellipsis-vertical");
-  e.classList.toggle("fa-trash-can");
+  e.classList.toggle('fa-ellipsis-vertical');
+  e.classList.toggle('fa-trash-can');
 }
 
-const activeCountSpan = document.getElementById("active-count");
+const activeCountSpan = document.getElementById('active-count');
 
 function updateCount(countChange) {
   activeCount += countChange;
@@ -94,33 +93,33 @@ function updateTodo(index, countChange = 0) {
 }
 
 const refreshListeners = () => {
-  document.querySelectorAll("textarea").forEach((item) => {
-    item.addEventListener("focus", (e) => {
-      editing(e.target.parentElement.querySelector("i"));
+  document.querySelectorAll('textarea').forEach((item) => {
+    item.addEventListener('focus', (e) => {
+      editing(e.target.parentElement.querySelector('i'));
     });
 
-    item.addEventListener("blur", (e) => {
-      editing(e.target.parentElement.querySelector("i"));
+    item.addEventListener('blur', (e) => {
+      editing(e.target.parentElement.querySelector('i'));
     });
 
-    item.addEventListener("input", (e) => {
+    item.addEventListener('input', (e) => {
       const textarea = e.target;
       textarea.rows = Math.ceil(textarea.scrollHeight / 20);
     });
   });
 
   document.querySelectorAll('input[type="checkbox"]').forEach((item) => {
-    item.addEventListener("change", (e) => {
+    item.addEventListener('change', (e) => {
       const parent = e.target.parentElement;
       let countChange = 0;
       if (e.target.checked) {
-        parent.classList.add("completed");
+        parent.classList.add('completed');
         countChange = -1;
       } else {
-        parent.classList.remove("completed");
+        parent.classList.remove('completed');
         countChange = 1;
       }
-      updateTodo(parent.getAttribute("data-index"), countChange);
+      updateTodo(parent.getAttribute('data-index'), countChange);
     });
   });
 };
@@ -136,26 +135,26 @@ const addNewTodo = (text) => {
   refreshListeners();
 };
 
-document.querySelector(".todo-clear").addEventListener("click", () => {
+document.querySelector('.todo-clear').addEventListener('click', () => {
   todos = todos.filter((todo) => !todo.completed);
-  document.querySelectorAll(".completed").forEach((item) => {
+  document.querySelectorAll('.completed').forEach((item) => {
     item.remove();
   });
 });
 
-document.getElementById("clear-all").addEventListener("click", () => {
+document.getElementById('clear-all').addEventListener('click', () => {
   todos = [];
-  document.querySelectorAll(".todo").forEach((item) => {
+  document.querySelectorAll('.todo').forEach((item) => {
     item.remove();
   });
   updateCount(-activeCount);
 });
 
-document.getElementById("add-todo").addEventListener("input", (e) => {
-  e.target.addEventListener("keydown", (event) => {
-    if (event.keyCode === 13 && event.target.value !== "") {
+document.getElementById('add-todo').addEventListener('input', (e) => {
+  e.target.addEventListener('keydown', (event) => {
+    if (event.keyCode === 13 && event.target.value !== '') {
       addNewTodo(event.target.value);
-      event.target.value = "";
+      event.target.value = '';
     }
   });
 });
