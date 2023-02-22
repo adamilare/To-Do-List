@@ -1,28 +1,15 @@
 import './style.css';
+import {
+  addTodo,
+  getTodos,
+  updateTodo,
+  getActiveTodosCount,
+  removeTodo,
+  clearTodos,
+  clearCompletedTodos,
+  updateTodoStatus,
+} from './todo.js';
 
-let todos = [
-  { decription: 'Double-tap to edit', completed: false, index: 0 },
-  {
-    decription: "Drag 'n drop to reorder your list",
-    completed: false,
-    index: 1,
-  },
-  {
-    decription: 'Manage all your lists in one place',
-    completed: false,
-    index: 2,
-  },
-  { decription: 'Resync to clear out the old', completed: false, index: 3 },
-];
-
-let activeCount = todos.reduce((acc, todo) => {
-  if (!todo.completed) {
-    acc += 1;
-  }
-  return acc;
-}, 0);
-
-let lastIndex = 3;
 let todoListDiv;
 
 const createTodo = (todo) => {
@@ -43,15 +30,18 @@ const makeTodos = () => {
 
   const spanCount = document.createElement('span');
   spanCount.id = 'active-count';
-  spanCount.innerHTML = activeCount;
+  spanCount.innerHTML = getActiveTodosCount();
   todoHeader.appendChild(spanCount);
+  if (getActiveTodosCount() <= 0) {
+    todoHeader.querySelector('#active-count').hidden = true;
+  }
 
   todoInput.classList.add('todo-input');
   todoInput.innerHTML = '<input id="add-todo" type="text" placeholder="Add to your list..."><i class="fa fa-arrow-turn-down"></i>';
   todoWrapper.appendChild(todoInput);
 
   todoListDiv.classList.add('todos');
-  todos.forEach((todo) => {
+  getTodos().forEach((todo) => {
     todoListDiv.appendChild(createTodo(todo));
   });
   todoWrapper.appendChild(todoListDiv);
@@ -65,8 +55,8 @@ makeTodos();
 
 const activeCountSpan = document.getElementById('active-count');
 
-function updateCount(countChange) {
-  activeCount += countChange;
+function updateCount() {
+  const activeCount = getActiveTodosCount();
 
   if (activeCount <= 0) {
     activeCountSpan.hidden = true;
@@ -85,28 +75,11 @@ function editing(e) {
       const parent = e.parentElement;
       const index = parseInt(parent.getAttribute('data-index'), 10);
 
-      todos = todos.filter((todo) => {
-        if (todo.index !== index) return todo;
-
-        if (todo.completed);
-        else updateCount(-1);
-
-        return null;
-      });
+      removeTodo(index);
       parent.remove();
+      updateCount();
     });
   }
-}
-
-function updateTodo(index, countChange = 0) {
-  todos = todos.map((todo) => {
-    if (todo.index === index) {
-      todo.completed = !todo.completed;
-    }
-    return todo;
-  });
-
-  updateCount(countChange);
 }
 
 const refreshListeners = () => {
@@ -122,21 +95,24 @@ const refreshListeners = () => {
     item.addEventListener('input', (e) => {
       const textarea = e.target;
       textarea.rows = Math.ceil(textarea.scrollHeight / 20);
+      updateTodo(
+        textarea.parentElement.getAttribute('data-index'),
+        textarea.value,
+      );
     });
   });
 
   document.querySelectorAll('input[type="checkbox"]').forEach((item) => {
     item.addEventListener('change', (e) => {
       const parent = e.target.parentElement;
-      let countChange = 0;
       if (e.target.checked) {
         parent.classList.add('completed');
-        countChange = -1;
       } else {
         parent.classList.remove('completed');
-        countChange = 1;
       }
-      updateTodo(parent.getAttribute('data-index'), countChange);
+
+      updateTodoStatus(parent.getAttribute('data-index'));
+      updateCount();
     });
   });
 };
@@ -144,27 +120,24 @@ const refreshListeners = () => {
 refreshListeners();
 
 const addNewTodo = (text) => {
-  const todo = { decription: text, completed: false, index: lastIndex + 1 };
-  todos.push(todo);
-  lastIndex += 1;
-  todoListDiv.appendChild(createTodo(todo));
-  updateCount(1);
+  todoListDiv.appendChild(createTodo(addTodo(text)));
+  updateCount();
   refreshListeners();
 };
 
 document.querySelector('.todo-clear').addEventListener('click', () => {
-  todos = todos.filter((todo) => !todo.completed);
+  clearCompletedTodos();
   document.querySelectorAll('.completed').forEach((item) => {
     item.remove();
   });
 });
 
 document.getElementById('clear-all').addEventListener('click', () => {
-  todos = [];
+  clearTodos();
   document.querySelectorAll('.todo').forEach((item) => {
     item.remove();
   });
-  updateCount(-activeCount);
+  updateCount();
 });
 
 document.getElementById('add-todo').addEventListener('input', (e) => {
