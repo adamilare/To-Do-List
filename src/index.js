@@ -33,6 +33,7 @@ const createTodo = (todo) => {
   return newTodo;
 };
 
+// initial render
 const makeTodos = () => {
   const todoWrapper = document.getElementById("todo-main");
   const todoHeader = document.querySelector(".todo-header");
