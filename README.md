@@ -70,6 +70,7 @@ The project implementation introduces developers to basic Webpack development.
   - complete,
   - clear completed
   - and clear all
+- **Abstract Todos operations**
 - **Starting project development from a template repo**
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
