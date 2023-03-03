@@ -30,7 +30,7 @@
 
 # 📖 TO DO LIST <a name="about-project"></a>
 
-**To Do List** is part of introductory projects in Microverse software development program.
+>**To Do List** is part of introductory projects in Microverse software development program.
 The project implementation introduces developers to basic Webpack development.
 
 ## 🛠 Built With <a name="built-with"></a>
